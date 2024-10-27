@@ -3,7 +3,7 @@
 
 # MiNi-GPT 🤖
 
-**MiNi-GPT** is an interactive AI chat application built with **Streamlit**, enabling users to engage with powerful AI models like **GPT-4**, **Claude 3**, and **Meta Llama**. This project is designed for users who want to experience meaningful and creative conversations with AI, while offering features like model selection, exporting chat history, and a sleek user interface.
+**MiNi-GPT** is an interactive AI chat application built with **Streamlit**, enabling users to engage with powerful AI models like **GPT-4**, **Claude 3**,**Mixtral** and **Meta Llama**. This project is designed for users who want to experience meaningful and creative conversations with AI, while offering features like model selection, exporting chat history, and a sleek user interface.
 
 ### 🔥 **Live Demo**: [MiNi-GPT](https://mingpt.streamlit.app) ✨
 
