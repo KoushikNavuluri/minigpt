@@ -65,6 +65,31 @@ def initiate_id():
         st.error(f"Error initiating session: {response.status_code}")
         return None
 
+def reset_chat():
+    # List of all session state keys to reset
+    keys_to_reset = [
+        'messages',
+        'conversation_history',
+        'show_chat',
+        'user_name',
+        'selected_model',
+        'welcome_displayed'
+    ]
+    
+    # Reset each key in session state
+    for key in keys_to_reset:
+        if key in st.session_state:
+            del st.session_state[key]
+    
+    # Initialize fresh session state
+    st.session_state.welcome_displayed = False
+    st.session_state.show_chat = False
+    st.session_state.messages = []
+    st.session_state.conversation_history = []
+
+    # Get a fresh VQD ID
+    st.session_state.vqd_id = initiate_id()
+
 def send_message(prompt, conversation_history, selected_model):
     url = "https://duckduckgo.com/duckchat/v1/chat"
     
@@ -343,9 +368,7 @@ def main():
         # Reset button
         st.markdown("### ⟳ Reset Chat:")
         if st.button("Reset Chat"):
-            for key in ['messages', 'conversation_history', 'show_chat', 'user_name', 'selected_model']:
-                if key in st.session_state:
-                    del st.session_state[key]
+            reset_chat()
             st.rerun()
     
     
