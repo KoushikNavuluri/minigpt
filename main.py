@@ -198,7 +198,8 @@ def show_welcome_page():
             model_options = {
                 "GPT-4": "gpt-4o-mini",
                 "Claude 3": "claude-3-haiku-20240307",
-                "Meta Llama": "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo"
+                "Meta Llama": "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+                "Mixtral":"mistralai/Mixtral-8x7B-Instruct-v0.1"
             }
             
             selected_model_name = st.selectbox(
@@ -219,10 +220,11 @@ def show_welcome_page():
     with right_col:
         st.markdown("### 🔥 Featured Models")
         for model, description in [
-            ("ChatGPT", "Your AI Companion - Dive into creative discussions and insightful Q&A!"),
-            ("Claude 3", "The Conversationalist - Experience nuanced dialogue with a focus on understanding!"),
-            ("Meta Llama", "The Creative Genius - Unleash your imagination with unique ideas and storytelling!")
-        ]:
+            ("ChatGPT (gpt-4o-mini), "Your AI Companion - Dive into creative discussions and insightful Q&A!"),
+    ("claude-3" (claude-3-haiku-20240307), "The Conversationalist - Experience nuanced dialogue with a focus on understanding!"),
+    ("Meta" (meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo), "The Creative Genius - Unleash your imagination with unique ideas and storytelling!"),
+    ("Mixtral"(mistralai/Mixtral-8x7B-Instruct-v0.1), "The Poet - Craft elegant model to explore the beauty of concise expression!")
+]:
             st.markdown(f"""
             <div class='gradient-border' style='background-color: #000;'>
                 <strong>{model}</strong><br>
@@ -312,8 +314,10 @@ def main():
     model_display_name = {
         "gpt-4o-mini": "GPT-4",
         "claude-3-haiku-20240307": "Claude 3",
-        "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo": "Meta Llama"
+        "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo": "Meta Llama",
+        "mistralai/Mixtral-8x7B-Instruct-v0.1": "Mixtral"
     }
+    
     st.caption(f"Currently chatting with: {model_display_name.get(st.session_state.selected_model, st.session_state.selected_model)}")
     
     # Sidebar
