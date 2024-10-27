@@ -136,7 +136,7 @@ def generate_image(prompt):
 def is_image_request(prompt):
     # List of keywords that might indicate an image generation request
     image_keywords = [
-        "create image", "generate image", "draw", "create a picture",
+        "create image","create an image", "generate image", "draw", "create a picture",
         "make an image", "generate a picture", "create art", "generate art",
         "create a drawing", "make a picture", "visualize", "create visual",
         "make art", "design image", "create illustration", "generate illustration"
@@ -165,8 +165,7 @@ def send_message(prompt, conversation_history, selected_model):
             display_image_message(image_data)
             
             # Return response with image ID
-            response = f"""I've generated the image based on your request. 
-<image_marker id="{image_id}">"""
+            response = f"""I've generated the image based on your request. """
             yield response
             return
         else:
