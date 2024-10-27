@@ -220,10 +220,10 @@ def show_welcome_page():
     with right_col:
         st.markdown("### 🔥 Featured Models")
         for model, description in [
-            ("ChatGPT (gpt-4o-mini), "Your AI Companion - Dive into creative discussions and insightful Q&A!"),
-    ("claude-3" (claude-3-haiku-20240307), "The Conversationalist - Experience nuanced dialogue with a focus on understanding!"),
-    ("Meta" (meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo), "The Creative Genius - Unleash your imagination with unique ideas and storytelling!"),
-    ("Mixtral"(mistralai/Mixtral-8x7B-Instruct-v0.1), "The Poet - Craft elegant model to explore the beauty of concise expression!")
+            ("ChatGPT (gpt-4o-mini)", "Your AI Companion - Dive into creative discussions and insightful Q&A!"),
+    ("claude-3 (claude-3-haiku-20240307)", "The Conversationalist - Experience nuanced dialogue with a focus on understanding!"),
+    ("Meta (meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo)", "The Creative Genius - Unleash your imagination with unique ideas and storytelling!"),
+    ("Mixtral (mistralai/Mixtral-8x7B-Instruct-v0.1)", "The Poet - Craft elegant model to explore the beauty of concise expression!")
 ]:
             st.markdown(f"""
             <div class='gradient-border' style='background-color: #000;'>
