@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 import pandas as pd
 
-# [Previous functions remain the same: download_chat_history, initiate_id, send_message]
+
 def download_chat_history():
     # Convert chat history to DataFrame
     chat_data = []
@@ -17,7 +17,7 @@ def download_chat_history():
     
     df = pd.DataFrame(chat_data)
     
-    # Convert to various formats
+    
     csv = df.to_csv(index=False)
     json_str = df.to_json(orient='records', indent=2)
     
@@ -65,12 +65,9 @@ def initiate_id():
         st.error(f"Error initiating session: {response.status_code}")
         return None
 
-def send_message(prompt, conversation_history, selected_model, is_continue=False):
+def send_message(prompt, conversation_history, selected_model):
     url = "https://duckduckgo.com/duckchat/v1/chat"
     
-    if is_continue:
-        # If continuing, modify the prompt to request continuation without mentioning it
-        prompt = "continue from the last line where you left in previous response. Note: please don't mention that you are continuing. and continue from exactly where you stopped."
     
     conversation_history.append({"role": "user", "content": prompt})
     
@@ -121,13 +118,7 @@ def send_message(prompt, conversation_history, selected_model, is_continue=False
                 except json.JSONDecodeError:
                     pass
 
-        if is_continue:
-            # If this is a continuation, append to the last assistant message instead of creating a new one
-            last_assistant_msg = next((msg for msg in reversed(conversation_history) if msg["role"] == "assistant"), None)
-            if last_assistant_msg:
-                last_assistant_msg["content"] = last_assistant_msg["content"] + assistant_response
-        else:
-            conversation_history.append({"role": "assistant", "content": assistant_response})
+        conversation_history.append({"role": "assistant", "content": assistant_response})
     else:
         st.error(f"Error: {response.status_code}")
 
@@ -136,7 +127,7 @@ def send_message(prompt, conversation_history, selected_model, is_continue=False
 def show_welcome_page():
     st.session_state.welcome_displayed = True
     
-    # Add custom CSS for gradient borders and other styling
+    
     st.markdown("""
     <style>         
     .gradient-border {
@@ -165,7 +156,7 @@ def show_welcome_page():
     </style>
     """, unsafe_allow_html=True)
     
-    # Create two columns for the main layout
+    
     left_col, right_col = st.columns([2, 1])
     
     with left_col:
@@ -303,7 +294,7 @@ def main():
     if "vqd_id" not in st.session_state:
         st.session_state.vqd_id = initiate_id()
 
-    # Show welcome page if needed
+    
     if not st.session_state.show_chat:
         show_welcome_page()
         return
@@ -357,7 +348,7 @@ def main():
                     del st.session_state[key]
             st.rerun()
     
-    # Add a divider
+    
     st.markdown("---")
 
     # Display chat messages
