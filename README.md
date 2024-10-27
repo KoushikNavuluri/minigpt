@@ -11,7 +11,7 @@
 
 ## ✨ **Key Features**
 
-- **🤖 Choose Your AI Companion:** Switch between **GPT-4**, **Claude 3**, and **Meta Llama** to get a diverse experience with different conversational styles and capabilities.
+- **🤖 Choose Your AI Companion:** Switch between **GPT-4**, **Claude 3**,**Mixtral** and **Meta Llama** to get a diverse experience with different conversational styles and capabilities.
 - **💬 Engaging Conversations:** Enjoy dynamic interactions through an intuitive chat interface, where responses feel natural and context-aware.
 - **📤 Export Chat History:** Download chat logs in **CSV** or **JSON** formats for future reference, making it easy to save valuable insights or revisit conversations.
 - **🔒 Privacy-Focused:** Your privacy is our top priority. All interactions are handled securely and are never stored permanently.
