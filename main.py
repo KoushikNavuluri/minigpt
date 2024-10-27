@@ -179,20 +179,23 @@ def show_welcome_page():
         
         # User input form
         with st.container():
-            # Add autocomplete="off" to prevent browser suggestions
             st.markdown("""
-            <div class="stTextInput">
-                <input type="text" id="user_name_input" 
-                    placeholder="Enter your name to begin..." 
-                    autocomplete="off"
-                    style="width: 100%; font-size: 1.1em; padding: 1em; border: 1px solid #ddd; border-radius: 4px;"
-                    onchange="document.getElementById('hidden_name_input').value = this.value;"
-                >
-            </div>
+            <style>
+            .stTextInput > div > div > input {
+                font-size: 1.1em;
+                padding: 1em;
+            }
+                        
+            .stSelectbox > div > div > select {
+                font-size: 1.1em;
+                padding: 0.5em;
+            }
+            </style>
             """, unsafe_allow_html=True)
             
-            # Hidden input to store the value
-            user_name = st.text_input("", key="hidden_name_input", label_visibility="collapsed")
+            user_name = st.text_input("", placeholder="Enter your name to begin...", key="user_name_input" ,label_visibility="collapsed",autocomplete="off")
+                
+            
             model_options = {
                 "GPT-4": "gpt-4o-mini",
                 "Claude 3": "claude-3-haiku-20240307",
