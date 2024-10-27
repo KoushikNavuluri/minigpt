@@ -3,6 +3,11 @@ import requests
 import json
 from datetime import datetime
 import pandas as pd
+import uuid
+import io
+import re
+from PIL import Image
+import base64
 
 
 def download_chat_history():
@@ -90,10 +95,88 @@ def reset_chat():
     # Get a fresh VQD ID
     st.session_state.vqd_id = initiate_id()
 
+def generate_image(prompt):
+    url = "https://ai-api.magicstudio.com/api/ai-art-generator"
+    anonymous_user_id = str(uuid.uuid4())
+    
+    payload = {
+        'prompt': prompt,
+        'output_format': 'bytes',
+        'user_profile_id': 'null',
+        'anonymous_user_id': anonymous_user_id
+    }
+    
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0',
+        'Accept': 'application/json, text/plain, */*',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Accept-Encoding': 'gzip, deflate, br, zstd',
+        'Referer': 'https://magicstudio.com/ai-art-generator/',
+        'Origin': 'https://magicstudio.com',
+        'DNT': '1',
+        'Sec-GPC': '1',
+        'Connection': 'keep-alive',
+        'Sec-Fetch-Dest': 'empty',
+        'Sec-Fetch-Mode': 'cors',
+        'Sec-Fetch-Site': 'same-site',
+        'Priority': 'u=0'
+    }
+    
+    try:
+        response = requests.post(url, headers=headers, data=payload)
+        if response.status_code == 200:
+            return response.content
+        else:
+            st.error(f"Error generating image: {response.status_code}")
+            return None
+    except Exception as e:
+        st.error(f"Error generating image: {str(e)}")
+        return None
+
+def is_image_request(prompt):
+    # List of keywords that might indicate an image generation request
+    image_keywords = [
+        "create image", "generate image", "draw", "create a picture",
+        "make an image", "generate a picture", "create art", "generate art",
+        "create a drawing", "make a picture", "visualize", "create visual",
+        "make art", "design image", "create illustration", "generate illustration"
+    ]
+    
+    prompt_lower = prompt.lower()
+    return any(keyword in prompt_lower for keyword in image_keywords)
+
+ 
 def send_message(prompt, conversation_history, selected_model):
+    # Check if this is an image generation request
+    if is_image_request(prompt):
+        # Generate image
+        image_data = generate_image(prompt)
+        
+        if image_data:
+            # Store image data in session state
+            if 'generated_images' not in st.session_state:
+                st.session_state.generated_images = {}
+            
+            # Generate a unique ID for this image
+            image_id = str(uuid.uuid4())
+            st.session_state.generated_images[image_id] = image_data
+            
+            # Display the image
+            display_image_message(image_data)
+            
+            # Return response with image ID
+            response = f"""I've generated the image based on your request. 
+<image_marker id="{image_id}">"""
+            yield response
+            return
+        else:
+            yield "Sorry, I wasn't able to generate the image. Please try again with a different prompt."
+            return
+    
+    # Regular chat message handling
     url = "https://duckduckgo.com/duckchat/v1/chat"
     
-    
+    # Only add non-image messages to conversation history
     conversation_history.append({"role": "user", "content": prompt})
     
     payload = json.dumps({
@@ -147,6 +230,59 @@ def send_message(prompt, conversation_history, selected_model):
     else:
         st.error(f"Error: {response.status_code}")
 
+def display_image_message(image_data):
+    try:
+        # Convert bytes to image
+        image = Image.open(io.BytesIO(image_data))
+        
+        # Create columns for better layout
+        col1, col2, col3 = st.columns([1, 2, 1])
+        
+        with col2:
+            # Display the image with a nice border and shadow
+            st.markdown("""
+                <style>
+                    .generated-image {
+                        border-radius: 10px;
+                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                        margin: 10px 0;
+                    }
+                </style>
+            """, unsafe_allow_html=True)
+            
+            # Display the image
+            st.image(image, use_column_width=True, caption="Generated Image")
+            
+            # Add download button
+            buf = io.BytesIO()
+            image.save(buf, format="PNG")
+            byte_im = buf.getvalue()
+            
+            st.download_button(
+                label="Download Image",
+                data=byte_im,
+                file_name=f"generated_image_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png",
+                mime="image/png"
+            )
+    except Exception as e:
+        st.error(f"Error displaying image: {str(e)}")
+
+def render_message_with_images(message_content):
+    # Check if message contains an image marker
+    if '<image_marker' in message_content:
+        # Extract image ID
+        image_id_match = re.search(r'<image_marker id="([^"]+)">', message_content)
+        if image_id_match and image_id_match.group(1) in st.session_state.generated_images:
+            image_id = image_id_match.group(1)
+            # Display the stored image
+            display_image_message(st.session_state.generated_images[image_id])
+            # Display the text part of the message
+            clean_message = message_content.split('<image_marker')[0].strip()
+            st.markdown(clean_message)
+        else:
+            st.markdown(message_content)
+    else:
+        st.markdown(message_content) 
 
 
 def show_welcome_page():
@@ -374,14 +510,20 @@ def main():
     
     st.markdown("---")
 
+    # Initialize generated_images in session state if not exists
+    if 'generated_images' not in st.session_state:
+        st.session_state.generated_images = {}
+
     # Display chat messages
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+            render_message_with_images(message["content"])
 
     # User input
     if prompt := st.chat_input("What would you like to ask?"):
+        # Always add to display messages
         st.session_state.messages.append({"role": "user", "content": prompt})
+        
         with st.chat_message("user"):
             st.markdown(prompt)
 
@@ -393,8 +535,8 @@ def main():
                 message_placeholder.markdown(full_response + "▌")
             message_placeholder.markdown(full_response)
         
+        # Always add to display messages
         st.session_state.messages.append({"role": "assistant", "content": full_response})
-
   
 
 if __name__ == "__main__":
